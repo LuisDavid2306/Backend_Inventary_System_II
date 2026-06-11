@@ -2,7 +2,7 @@ package com.cibertec.security;
 
 import java.security.Key;
 import java.util.Date;
-
+import javax.crypto.SecretKey;
 import org.springframework.stereotype.Service;
 
 import com.cibertec.entity.User;
@@ -38,4 +38,22 @@ public class JwtService {
 	            .signWith(key)
 	            .compact();
 	}
+	
+	public String extractUsername(String token) {
+
+	    return Jwts.parser()
+	            .verifyWith((SecretKey) key)
+	            .build()
+	            .parseSignedClaims(token)
+	            .getPayload()
+	            .getSubject();
+	}
+	
+	public boolean isTokenValid(String token, String username) {
+
+	    String tokenUsername = extractUsername(token);
+
+	    return tokenUsername.equals(username);
+	}
+	
 }

@@ -8,13 +8,15 @@ import com.cibertec.entity.Product;
 import com.cibertec.repository.ProductRepository;
 
 import lombok.RequiredArgsConstructor;
+import util.SecurityUtil;
 
 @Service
 @RequiredArgsConstructor
 public class ProductServiceImpl implements ProductService {
 	
 	private final ProductRepository repository;
-
+	private final AuditService auditService;
+	
     @Override
     public List<Product> findAll() {
         return repository.findAll();
@@ -28,7 +30,14 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Product save(Product product) {
-        return repository.save(product);
+    	
+    	Product saved = repository.save(product);
+    	auditService.saveLog(
+    	        SecurityUtil.getCurrentUsername(),
+    	        "CREATE",
+    	        saved.getId());
+
+    	return saved;
     }
 
     @Override
@@ -41,11 +50,24 @@ public class ProductServiceImpl implements ProductService {
         existing.setPrice(product.getPrice());
         existing.setStock(product.getStock());
 
-        return repository.save(existing);
+        Product updated = repository.save(existing);
+
+        auditService.saveLog(
+                SecurityUtil.getCurrentUsername(),
+                "UPDATE",
+                updated.getId());
+
+        return updated;
     }
 
     @Override
     public void delete(Long id) {
-        repository.deleteById(id);
+    	
+    	auditService.saveLog(
+    	        SecurityUtil.getCurrentUsername(),
+    	        "DELETE",
+    	        id);
+
+    	repository.deleteById(id);
     }
 }
