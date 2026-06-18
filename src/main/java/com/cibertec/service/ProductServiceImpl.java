@@ -17,27 +17,30 @@ public class ProductServiceImpl implements ProductService {
 	private final ProductRepository repository;
 	private final AuditService auditService;
 	
-    @Override
-    public List<Product> findAll() {
-        return repository.findAll();
-    }
+	@Override
+	public List<Product> findAll() {
+	    return repository.findByActiveTrue();
+	}
 
-    @Override
-    public Product findById(Long id) {
-        return repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
-    }
+	@Override
+	public Product findById(Long id) {
+	    return repository.findByIdAndActiveTrue(id)
+	            .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
+	}
 
     @Override
     public Product save(Product product) {
-    	
-    	Product saved = repository.save(product);
-    	auditService.saveLog(
-    	        SecurityUtil.getCurrentUsername(),
-    	        "CREATE",
-    	        saved.getId());
 
-    	return saved;
+        product.setActive(true);
+
+        Product saved = repository.save(product);
+
+        auditService.saveLog(
+                SecurityUtil.getCurrentUsername(),
+                "CREATE",
+                saved.getId());
+
+        return saved;
     }
 
     @Override
@@ -62,12 +65,25 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public void delete(Long id) {
-    	
-    	auditService.saveLog(
-    	        SecurityUtil.getCurrentUsername(),
-    	        "DELETE",
-    	        id);
 
-    	repository.deleteById(id);
+        Product product = findById(id);
+
+        product.setActive(false);
+
+        repository.save(product);
+
+        auditService.saveLog(
+                SecurityUtil.getCurrentUsername(),
+                "DEACTIVATE",
+                id);
+    }
+    
+    public Product activate(Long id) {
+        Product product = repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
+
+        product.setActive(true);
+
+        return repository.save(product);
     }
 }
