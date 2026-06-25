@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.cibertec.dto.ProductProjection;
 import com.cibertec.entity.Product;
 import com.cibertec.repository.ProductRepository;
 
@@ -17,10 +18,11 @@ public class ProductServiceImpl implements ProductService {
 	private final ProductRepository repository;
 	private final AuditService auditService;
 	
-	@Override
-	public List<Product> findAll() {
-	    return repository.findByActiveTrue();
-	}
+	
+	 @Override
+	    public List<Product> findAll() {
+	        return repository.findAll();  
+	    }
 
 	@Override
 	public Product findById(Long id) {
@@ -85,5 +87,10 @@ public class ProductServiceImpl implements ProductService {
         product.setActive(true);
 
         return repository.save(product);
+    }
+    
+    @Override
+    public List<Product> search(String keyword) {
+        return repository.search(keyword);
     }
 }
