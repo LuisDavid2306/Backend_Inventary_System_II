@@ -7,6 +7,9 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import com.cibertec.dto.LoginRequest;
 import com.cibertec.dto.RegisterRequest;
@@ -26,7 +29,10 @@ public class AuthServiceImpl implements AuthService {
     private final AuthenticationManager authenticationManager; 
     private final UserDetailsService userDetailsService; 
     
-    
+    @Override
+    public List<User> findAll() {
+        return userRepository.findAll();  
+    }
 
     @Override
     public void register(RegisterRequest request) {
