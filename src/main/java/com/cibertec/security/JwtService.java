@@ -31,17 +31,15 @@ public class JwtService {
         Map<String, Object> claims = new HashMap<>();
         claims.put("role", user.getRole());
 
-        // 👇 AGREGAMOS ESTO
         claims.put("username", user.getUsername());
 
-        return generateToken(claims, user.getEmail()); // 👈 sub = email (correcto)
+        return generateToken(claims, user.getEmail());
     }
 
     public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("role", userDetails.getAuthorities().iterator().next().getAuthority());
 
-        // 👇 AQUÍ NO tienes username directo desde UserDetails
         claims.put("username", userDetails.getUsername());
 
         return generateToken(claims, userDetails.getUsername());
@@ -49,17 +47,17 @@ public class JwtService {
 
     private String generateToken(Map<String, Object> claims, String subject) {
         return Jwts.builder()
-                .claims(claims)      // 👈 SIN "set"
-                .subject(subject)    // 👈 SIN "set"
-                .issuedAt(new Date()) // 👈 SIN "set"
-                .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60)) // 👈 SIN "set"
+                .claims(claims)      
+                .subject(subject)   
+                .issuedAt(new Date()) 
+                .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60)) 
                 .signWith(key)
                 .compact();
     }
     
     public String extractUsername(String token) {
         return Jwts.parser()
-                .verifyWith((SecretKey) key)  // 👈 USAR verifyWith
+                .verifyWith((SecretKey) key)  
                 .build()
                 .parseSignedClaims(token)
                 .getPayload()
