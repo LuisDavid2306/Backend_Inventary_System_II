@@ -29,7 +29,7 @@ public class JwtFilter extends OncePerRequestFilter {
             FilterChain filterChain)
             throws ServletException, IOException {
 
-        // 👇 IGNORAR TODAS LAS RUTAS /auth/
+       
         String path = request.getRequestURI();
         if (path.startsWith("/auth/")) {
             filterChain.doFilter(request, response);

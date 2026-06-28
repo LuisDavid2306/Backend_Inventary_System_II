@@ -30,7 +30,7 @@ import lombok.RequiredArgsConstructor;
 public class SecurityConfig {
 	
 	private final JwtFilter jwtFilter;
-    private final UserDetailsService userDetailsService;  // 👈 AGREGADO
+    private final UserDetailsService userDetailsService; 
     
 
     @Bean
@@ -43,13 +43,13 @@ public class SecurityConfig {
                 .anyRequest().authenticated()
             )
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            .authenticationProvider(authenticationProvider())  // 👈 AGREGADO
+            .authenticationProvider(authenticationProvider()) 
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
             .build();
     }
 
     @Bean
-    AuthenticationProvider authenticationProvider() {  // 👈 AGREGADO
+    AuthenticationProvider authenticationProvider() { 
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
         authProvider.setUserDetailsService(userDetailsService);
         authProvider.setPasswordEncoder(passwordEncoder());
@@ -57,22 +57,29 @@ public class SecurityConfig {
     }
 
     @Bean
-    AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {  // 👈 AGREGADO
+    AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception { 
         return config.getAuthenticationManager();
     }
 
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:4200"));
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
-        configuration.setAllowedHeaders(Arrays.asList("*"));
-        configuration.setAllowCredentials(true);
-        configuration.setExposedHeaders(Arrays.asList("Authorization"));
-        
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-        return source;
+    	 CorsConfiguration configuration = new CorsConfiguration();
+    	    configuration.setAllowedOriginPatterns(
+    	            Arrays.asList("*"));
+    	    configuration.setAllowedMethods(
+    	            Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
+    	    configuration.setAllowedHeaders(
+    	            Arrays.asList("*"));
+    	    configuration.setExposedHeaders(
+    	            Arrays.asList("Authorization"));
+    	    configuration.setAllowCredentials(true);
+
+    	    UrlBasedCorsConfigurationSource source =
+    	            new UrlBasedCorsConfigurationSource();
+
+    	    source.registerCorsConfiguration("/**", configuration);
+
+    	    return source;
     }
 
     @Bean
